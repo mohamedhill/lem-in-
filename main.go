@@ -1,49 +1,29 @@
 package main
 
-import "fmt"
+import (
+	"bufio"
+	"fmt"
+	"os"
+	"strings"
 
-func Dfs(Graph map[string][]string, node string, visited map[string]bool) {
-	visited[node] = true
-	fmt.Println(node)
-	for _, v := range Graph[node] {
-		if !visited[v] {
-			visited[v] = true
-			Dfs(Graph, v, visited)
-		}
-	}
-}
+	"lem-in/funcs"
+)
 
 func main() {
-	Graph := map[string][]string{
-		"A": {"B"},
-		"B": {"C", "D"},
-		"C": {"A"},
-		"D": {"E"},
-		"E": {"B"},
-		"F": {"E"},
+	if len(os.Args) != 2 || !strings.HasSuffix(os.Args[1], ".txt") {
+		fmt.Println("error: check the arguments again")
+		return
 	}
-	Bfs(Graph, "A")
-	fmt.Println("--------------------------------")
-	visited := make(map[string]bool)
-
-	Dfs(Graph, "A", visited)
-}
-
-func Bfs(Graph map[string][]string, start string) {
-	visited := make(map[string]bool)
-	var queue []string
-	queue = append(queue, start)
-	visited[start] = true
-	for len(queue) > 0 {
-		node := queue[0]
-		queue = queue[1:]
-		fmt.Println(node)
-
-		for _, v := range Graph[node] {
-			if !visited[v] {
-				visited[v] = true
-				queue = append(queue, v)
-			}
-		}
+	input, err := os.Open(os.Args[1])
+	if err != nil {
+		fmt.Println("error in reading file")
+		return
 	}
+	defer input.Close()
+	scanner := bufio.NewScanner(input)
+	Graph, err := funcs.ParseInput(scanner)
+	if err != nil {
+		fmt.Println("Error : Check your input again")
+	}
+	
 }
