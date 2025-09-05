@@ -44,8 +44,8 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 					fmt.Println("error in input check again; usage of links: example1-example2")
 					return nil, nil
 				}
-				room1, exist1 := Graph.Rooms[parts[1]]
-				room2, exist2 := Graph.Rooms[parts[2]]
+				room1, exist1 := Graph.Rooms[parts[0]]
+				room2, exist2 := Graph.Rooms[parts[1]]
 				if !exist1 || !exist2 {
 					fmt.Println("error room can't be linked (dosen't exist)")
 					return nil, nil
@@ -69,6 +69,7 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 				cordinate2, err := strconv.Atoi(splitted[2])
 				if err != nil {
 					fmt.Println("error in input checkroom cordinates")
+					return nil, nil
 				}
 				for _, v := range Graph.Rooms {
 					if splitted[0] == v.Name {
@@ -77,6 +78,17 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 					}
 				}
 				room := &Room{Name: splitted[0], x: cordinate1, y: cordinate2}
+				if start {
+					Graph.Start = room
+					start = false
+					room.IsStart = true
+				}
+				if end {
+					Graph.End = room
+					end = false
+					room.IsEnd = true
+				}
+				Graph.Rooms[splitted[0]] = room
 
 			}
 		}
