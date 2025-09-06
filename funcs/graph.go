@@ -2,9 +2,9 @@ package funcs
 
 type Room struct {
 	Name    string
-	x       int
-	y       int
-	links   []*Room
+	X       int
+	Y       int
+	Links   []*Room
 	IsStart bool
 	IsEnd   bool
 }

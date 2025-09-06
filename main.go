@@ -21,9 +21,7 @@ func main() {
 	}
 	defer input.Close()
 	scanner := bufio.NewScanner(input)
-	Graph, err := funcs.ParseInput(scanner)
-	if err != nil {
-		fmt.Println("Error : Check your input again")
-	}
+	Graph, _ := funcs.ParseInput(scanner)
+	path := funcs.PathFinding(Graph)
 	
 }

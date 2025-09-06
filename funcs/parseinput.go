@@ -16,14 +16,16 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 		line := scanner.Text()
 
 		// Ignoring Emptylines and comments
-		if strings.TrimSpace(line) == "" || !strings.HasPrefix(line, "##") && strings.HasPrefix(line, "#") {
+		if strings.TrimSpace(line) == "" || strings.HasPrefix(line, "#") && !strings.HasPrefix(line, "##") {
 			continue
 		}
 		if strings.HasPrefix(line, "##") {
 			if strings.TrimPrefix(line, "##") == "start" {
 				start = true
+				continue
 			} else if strings.TrimPrefix(line, "##") == "end" {
 				end = true
+				continue
 			} else {
 				fmt.Println("error in input check again; usage: ##start||##end")
 				return nil, nil
@@ -50,8 +52,8 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 					fmt.Println("error room can't be linked (dosen't exist)")
 					return nil, nil
 				}
-				room1.links = append(room1.links, room2)
-				room2.links = append(room2.links, room1)
+				room1.Links = append(room1.Links, room2)
+				room2.Links = append(room2.Links, room1)
 			} else {
 				splitted := strings.Fields(line)
 				if len(splitted) != 3 {
@@ -77,7 +79,7 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 						return nil, nil
 					}
 				}
-				room := &Room{Name: splitted[0], x: cordinate1, y: cordinate2}
+				room := &Room{Name: splitted[0], X: cordinate1, Y: cordinate2}
 				if start {
 					Graph.Start = room
 					start = false
