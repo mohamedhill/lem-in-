@@ -7,16 +7,22 @@ import (
 	"strings"
 )
 
-func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
-	Graph := &Graph{Rooms: make(map[string]*Room)}
-	Line := -1
-	var start, end bool
-	for scanner.Scan() {
-		Line++
-		line := scanner.Text()
+type Coordinates struct {
+	X int
+	Y int
+}
 
+// a function to parse the input and verify format
+func ParseInput(scanner *bufio.Scanner) *Graph {
+	Graph := &Graph{Rooms: make(map[string]*Room)} // making a variable type pointer to Graph
+	AntsRead := false
+	var start, end bool
+	coords := make(map[Coordinates]string)
+	for scanner.Scan() {
+		line := scanner.Text()
+		line = strings.TrimSpace(line)
 		// Ignoring Emptylines and comments
-		if strings.TrimSpace(line) == "" || strings.HasPrefix(line, "#") && !strings.HasPrefix(line, "##") {
+		if line == "" || strings.HasPrefix(line, "#") && !strings.HasPrefix(line, "##") {
 			continue
 		}
 		if strings.HasPrefix(line, "##") {
@@ -28,29 +34,32 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 				continue
 			} else {
 				fmt.Println("error in input check again; usage: ##start||##end")
-				return nil, nil
+				return nil
 			}
 		}
-		if Line == 0 {
+		if !AntsRead {
 			Ants, err := strconv.Atoi(line)
 			if Ants <= 0 || err != nil {
 				fmt.Println("Error: Check the number of Ants; must be a positive integer number")
-				return nil, nil
+				return nil
+
 			}
+			AntsRead = true
 			Graph.Ants = Ants
+			continue
 		}
-		if Line > 0 {
+		if AntsRead {
 			if strings.Contains(line, "-") {
 				parts := strings.Split(line, "-")
 				if len(parts) != 2 {
 					fmt.Println("error in input check again; usage of links: example1-example2")
-					return nil, nil
+					return nil
 				}
 				room1, exist1 := Graph.Rooms[parts[0]]
 				room2, exist2 := Graph.Rooms[parts[1]]
 				if !exist1 || !exist2 {
 					fmt.Println("error room can't be linked (dosen't exist)")
-					return nil, nil
+					return nil
 				}
 				room1.Links = append(room1.Links, room2)
 				room2.Links = append(room2.Links, room1)
@@ -58,27 +67,35 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 				splitted := strings.Fields(line)
 				if len(splitted) != 3 {
 					fmt.Println("error in input check again; usage of rooms: roomname x y")
-					return nil, nil
+					return nil
 				}
 				if strings.HasPrefix(splitted[0], "#") || strings.HasPrefix(splitted[0], "L") {
 					fmt.Println("error in input check again; room name can't start with L or #")
-					return nil, nil
+					return nil
 				}
 				cordinate1, err := strconv.Atoi(splitted[1])
 				if err != nil {
 					fmt.Println("error in input checkroom cordinates")
+					return nil
 				}
 				cordinate2, err := strconv.Atoi(splitted[2])
 				if err != nil {
 					fmt.Println("error in input checkroom cordinates")
-					return nil, nil
+					return nil
 				}
 				for _, v := range Graph.Rooms {
 					if splitted[0] == v.Name {
 						fmt.Println("Error Duplicate room names")
-						return nil, nil
+						return nil
 					}
 				}
+				coord := Coordinates{X: cordinate1, Y: cordinate2}
+				if existingRoom, exists := coords[coord]; exists {
+					fmt.Printf("Error: Duplicate coordinates for rooms '%s' and '%s'\n", existingRoom, splitted[0])
+					return nil
+				}
+				coords[coord] = splitted[0]
+
 				room := &Room{Name: splitted[0], X: cordinate1, Y: cordinate2}
 				if start {
 					Graph.Start = room
@@ -95,5 +112,5 @@ func ParseInput(scanner *bufio.Scanner) (*Graph, error) {
 			}
 		}
 	}
-	return Graph, nil
+	return Graph
 }
