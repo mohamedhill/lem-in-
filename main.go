@@ -30,21 +30,21 @@ func main() {
 
 	var bestPaths [][]string
 	if Graph.Ants > 20 || len(Graph.Rooms) > 50 {
-		bestPaths := funcs.FindPathsBFS(Graph)
+		bestPaths = funcs.FindPathsBFS(Graph)
 	} else {
 		allPaths := funcs.FindAllPaths(Graph)
 		if len(allPaths) == 0 {
 			fmt.Println("ERROR: no valid path found")
 			return
-		} 
+		}
 		bestPaths = funcs.FilterPaths(allPaths)
 		if len(bestPaths) == 0 {
 			fmt.Println("ERROR: no non-overlapping paths found")
 			return
 		}
-	
-	antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
-	result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
-	fmt.Print(result)
+
+		antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
+		result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
+		fmt.Print(result)
 	}
 }
