@@ -42,9 +42,8 @@ func main() {
 			fmt.Println("ERROR: no non-overlapping paths found")
 			return
 		}
-
-		antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
-		result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
-		fmt.Print(result)
 	}
+	antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
+	result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
+	fmt.Print(result)
 }
