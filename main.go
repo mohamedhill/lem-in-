@@ -11,17 +11,39 @@ import (
 
 func main() {
 	if len(os.Args) != 2 || !strings.HasSuffix(os.Args[1], ".txt") {
-		fmt.Println("error: check the arguments again")
+		fmt.Println("error: Check your Args; Usage: go run . test.txt")
 		return
 	}
+
 	input, err := os.Open(os.Args[1])
 	if err != nil {
-		fmt.Println("error in reading file")
+		fmt.Println("error: can't open file", err)
 		return
 	}
 	defer input.Close()
 	scanner := bufio.NewScanner(input)
-	Graph, _ := funcs.ParseInput(scanner)
-	path := funcs.PathFinding(Graph)
+	Graph := funcs.ParseInput(scanner)
+	if Graph == nil || Graph.Start == nil || Graph.End == nil {
+		fmt.Println("ERROR: invalid data format")
+		return
+	}
+
+	//var bestPaths [][]string
+	//if Graph.Ants > 20 || len(Graph.Rooms) > 50 {
+		bestPaths := funcs.FindPathsBFS(Graph)
+	//} else {
+		//allPaths := funcs.FindAllPaths(Graph)
+		/* if len(allPaths) == 0 {
+			fmt.Println("ERROR: no valid path found")
+			return
+		} */
+		//bestPaths = funcs.FilterPaths(allPaths)
+		if len(bestPaths) == 0 {
+			fmt.Println("ERROR: no non-overlapping paths found")
+			return
+		}
 	
-}
+	antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
+	result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
+	fmt.Print(result)
+	}
