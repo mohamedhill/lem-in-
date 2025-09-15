@@ -27,7 +27,8 @@ func FindAllPaths(graph *Graph) [][]string {
 
 	return allPaths
 }
-//a function to filter paths by removing overlapping ones
+
+// a function to filter paths by removing overlapping ones
 func FilterPaths(allPaths [][]string) [][]string {
 	sort.Slice(allPaths, func(i, j int) bool {
 		return len(allPaths[i]) < len(allPaths[j])
@@ -73,7 +74,8 @@ func canAddPath(oldPath [][]string, newPath []string) bool {
 	}
 	return true
 }
-// a function to find shortest way using bfs 
+
+// a function to find shortest way using bfs
 func FindPathsBFS(graph *Graph) [][]string {
 	maxPaths := 20
 	var paths [][]string
@@ -129,6 +131,7 @@ func DistributeAnts(paths [][]string, antCount int) [][]int {
 		pathLen[i] = len(p)
 	}
 	minTurns := 0
+	// Number of ants that can arrive by turn minturn on a path of length l
 	for {
 		minTurns++
 		sum := 0
@@ -140,7 +143,7 @@ func DistributeAnts(paths [][]string, antCount int) [][]int {
 		if sum >= antCount {
 			break
 		}
-		
+
 	}
 	remaining := antCount
 	antNum := 1
