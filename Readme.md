@@ -1,24 +1,50 @@
-https://www.youtube.com/@ms.razantheteacher/videos
-https://www.youtube.com/watch?v=viG8UTUTSuY
-Suggested Learning Path for Lem-in Project:
+# Lem-in (Go Implementation)
 
-Graph Traversals (BFS & DFS):
-Make sure you understand BFS and DFS well, as they form the basis for most graph algorithms.
+## Overview
 
-Graph Representation:
-Learn how to represent your graph efficiently using an adjacency list or adjacency matrix (adjacency list is most commonly used for Lem-in).
+This project is a Go implementation of the classic **lem-in** challenge. The goal is to move a given number of ants from a start room to an end room through a network of rooms and links, using the minimum number of turns
 
-Shortest Path Algorithms:
-Understand Dijkstra’s and Bellman-Ford algorithms in detail for handling shortest paths.
+---
 
-Multiple Pathfinding and Flow Networks:
-Study Ford-Fulkerson, Edmonds-Karp, and Maximum Flow concepts. These will be crucial for handling multiple ants and ensuring efficient movement in the graph.
+## Features
 
-Cycle Detection:
-Learn how to use DFS for detecting cycles and ensuring that your paths do not lead to infinite loops.
+- Parses a custom text input format describing ants, rooms, and links.
+- Finds all possible paths from start to end using depth-first search.
+- Selects the largest set of non-overlapping paths.
+- Distributes ants for minimal total turns.
+- Simulates and prints ant movements turn by turn.
 
-Path Splitting & Simulation:
-Once you’ve found paths, you’ll need to simulate ants moving through them. Consider how you’ll handle multiple ants (perhaps using a queue or prioritization mechanism).
+---
 
-Practice:
-Try solving Lem-in-related problems on coding platforms like LeetCode, Codeforces, or HackerRank to sharpen your skills. Focus on problems involving maximum flow, shortest path, and graph traversal.
+## Usage
+
+go run . test.txt
+
+**Example:**
+```
+9
+##start
+richard 0 6
+gilfoyle 6 3
+##end
+peter 14 6
+richard-gilfoyle
+gilfoyle-peter
+```
+
+---
+
+## projet Structure
+
+- `main.go` — Entry point, handles input and output.
+- `funcs/graph.go` — structs for Graph and rooms
+- `funcs/parseinput.go` — Input parsing.
+- `funcs/pathfinding.go` — Pathfinding,and ant distribution.
+- `funcs/simulation.go` — Ant movement simulation and output.
+
+---
+
+## Authors
+
+-boulhaj
+-mhilli
