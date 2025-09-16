@@ -22,7 +22,8 @@ func main() {
 	}
 	defer input.Close()
 	scanner := bufio.NewScanner(input)
-	Graph := funcs.ParseInput(scanner)
+	Graph, fileinfo:= funcs.ParseInput(scanner)
+
 	if Graph == nil || Graph.Start == nil || Graph.End == nil {
 		fmt.Println("ERROR: invalid data format")
 		return
@@ -31,6 +32,10 @@ func main() {
 	var bestPaths [][]string
 	if Graph.Ants > 20 || len(Graph.Rooms) > 50 {
 		bestPaths = funcs.FindPathsBFS(Graph)
+		if bestPaths==nil{
+			fmt.Println("ERROR: no valid path found")
+			return
+		} 
 	} else {
 		allPaths := funcs.FindAllPaths(Graph)
 		if len(allPaths) == 0 {
@@ -45,5 +50,8 @@ func main() {
 	}
 	antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
 	result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
+	if len(fileinfo)!=0{
+		fmt.Print(fileinfo)
+	}	
 	fmt.Print(result)
 }
