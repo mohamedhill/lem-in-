@@ -1,6 +1,7 @@
 package funcs
 
 import (
+	
 	"sort"
 )
 
@@ -29,11 +30,16 @@ func FindAllPaths(graph *Graph) [][]string {
 }
 
 // a function to filter paths by removing overlapping ones
-func FilterPaths(allPaths [][]string) [][]string {
+func FilterPaths(allPaths [][]string,antnum int) [][]string  {
+	var oneantpath [][]string
 	sort.Slice(allPaths, func(i, j int) bool {
 		return len(allPaths[i]) < len(allPaths[j])
 	})
-
+	if antnum ==1{
+		oneantpath=append(oneantpath, allPaths[0])
+		return oneantpath
+	}
+	
 	var bestPath [][]string
 	var check func(current [][]string, left [][]string)
 	check = func(current [][]string, left [][]string) {
@@ -79,48 +85,38 @@ func canAddPath(oldPath [][]string, newPath []string) bool {
 func FindPathsBFS(graph *Graph) [][]string {
 	maxPaths := 20
 	var paths [][]string
-	used := map[string]bool{}
+	queue := [][]*Room{{graph.Start}}
 
-	for len(paths) < maxPaths {
-		queue := [][]*Room{{graph.Start}}
-		visited := map[string]bool{graph.Start.Name: true}
-		foundEnd := false
-		var endPath []*Room
+	for len(queue) > 0 && len(paths) < maxPaths {
+		path := queue[0]
+		queue = queue[1:]
+		last := path[len(path)-1]
 
-		for len(queue) > 0 && !foundEnd {
-			path := queue[0]
-			queue = queue[1:]
-			last := path[len(path)-1]
-			if last == graph.End {
-				endPath = path
-				foundEnd = true
-				break
+		if last == graph.End {
+			var strPath []string
+			for _, r := range path {
+				strPath = append(strPath, r.Name)
 			}
-			for _, neighbor := range last.Links {
-				if used[neighbor.Name] || visited[neighbor.Name] {
-					continue
-				}
-				visited[neighbor.Name] = true
-				newPath := append([]*Room{}, path...)
-				newPath = append(newPath, neighbor)
-				queue = append(queue, newPath)
+			paths = append(paths, strPath)
+			continue
+		}
+
+		
+		visitedInPath := map[*Room]bool{}
+		for _, r := range path {
+			visitedInPath[r] = true
+		}
+
+		for _, neighbor := range last.Links {
+			if visitedInPath[neighbor] {
+				continue 
 			}
-		}
-
-		if !foundEnd {
-			break
-		}
-
-		strPath := make([]string, len(endPath))
-		for i, room := range endPath {
-			strPath[i] = room.Name
-		}
-		paths = append(paths, strPath)
-
-		for i := 1; i < len(endPath)-1; i++ {
-			used[endPath[i].Name] = true
+			newPath := append([]*Room{}, path...)
+			newPath = append(newPath, neighbor)
+			queue = append(queue, newPath)
 		}
 	}
+
 	return paths
 }
 

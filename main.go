@@ -22,7 +22,7 @@ func main() {
 	}
 	defer input.Close()
 	scanner := bufio.NewScanner(input)
-	Graph, fileinfo:= funcs.ParseInput(scanner)
+	Graph, fileinfo := funcs.ParseInput(scanner)
 
 	if Graph == nil || Graph.Start == nil || Graph.End == nil {
 		fmt.Println("ERROR: invalid data format")
@@ -30,28 +30,38 @@ func main() {
 	}
 
 	var bestPaths [][]string
-	if Graph.Ants > 20 || len(Graph.Rooms) > 50 {
-		bestPaths = funcs.FindPathsBFS(Graph)
-		if bestPaths==nil{
-			fmt.Println("ERROR: no valid path found")
-			return
-		} 
-	} else {
-		allPaths := funcs.FindAllPaths(Graph)
-		if len(allPaths) == 0 {
-			fmt.Println("ERROR: no valid path found")
-			return
+	var allPaths [][]string
+	if len(Graph.Rooms) > 30 {
+		allPaths = funcs.FindPathsBFS(Graph)
+		if allPaths == nil {
+			allPaths = funcs.FindAllPaths(Graph)
+			if allPaths == nil {
+				fmt.Println("no valid path found")
+				return
+			}
 		}
-		bestPaths = funcs.FilterPaths(allPaths)
-		if len(bestPaths) == 0 {
-			fmt.Println("ERROR: no non-overlapping paths found")
-			return
+	} else {
+		allPaths = funcs.FindAllPaths(Graph)
+		if allPaths == nil {
+			allPaths = funcs.FindPathsBFS(Graph)
+
+			if allPaths == nil {
+				fmt.Println("ERROR: no valid path found DFS")
+				return
+			}
 		}
 	}
+	fmt.Println("allpaths here:", allPaths)
+	bestPaths = funcs.FilterPaths(allPaths, Graph.Ants)
+	if len(bestPaths) == 0 {
+		fmt.Println("ERROR: no non-overlapping paths found")
+		return
+	}
+
 	antDistribution := funcs.DistributeAnts(bestPaths, Graph.Ants)
 	result, _ := funcs.SimulateAntMovement(bestPaths, antDistribution)
-	if len(fileinfo)!=0{
+	if len(fileinfo) != 0 {
 		fmt.Print(fileinfo)
-	}	
+	}
 	fmt.Print(result)
 }
