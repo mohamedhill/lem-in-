@@ -1,8 +1,8 @@
 package funcs
 
 import (
-	
 	"sort"
+	"strings"
 )
 
 // FindAllPaths returns all paths from start to end as [][]string
@@ -30,16 +30,16 @@ func FindAllPaths(graph *Graph) [][]string {
 }
 
 // a function to filter paths by removing overlapping ones
-func FilterPaths(allPaths [][]string,antnum int) [][]string  {
-	var oneantpath [][]string
+func FilterPaths(allPaths [][]string, antnum int) [][]string {
 	sort.Slice(allPaths, func(i, j int) bool {
 		return len(allPaths[i]) < len(allPaths[j])
 	})
-	if antnum ==1{
-		oneantpath=append(oneantpath, allPaths[0])
+	var oneantpath [][]string
+	if antnum == 1 {
+		oneantpath = append(oneantpath, allPaths[0])
 		return oneantpath
 	}
-	
+
 	var bestPath [][]string
 	var check func(current [][]string, left [][]string)
 	check = func(current [][]string, left [][]string) {
@@ -85,38 +85,48 @@ func canAddPath(oldPath [][]string, newPath []string) bool {
 func FindPathsBFS(graph *Graph) [][]string {
 	maxPaths := 20
 	var paths [][]string
-	queue := [][]*Room{{graph.Start}}
+	used := map[string]bool{}
 
-	for len(queue) > 0 && len(paths) < maxPaths {
-		path := queue[0]
-		queue = queue[1:]
-		last := path[len(path)-1]
+	for len(paths) < maxPaths {
+		queue := [][]*Room{{graph.Start}}
+		visited := map[string]bool{graph.Start.Name: true}
+		foundEnd := false
+		var endPath []*Room
 
-		if last == graph.End {
-			var strPath []string
-			for _, r := range path {
-				strPath = append(strPath, r.Name)
+		for len(queue) > 0 && !foundEnd {
+			path := queue[0]
+			queue = queue[1:]
+			last := path[len(path)-1]
+			if last == graph.End {
+				endPath = path
+				foundEnd = true
+				break
 			}
-			paths = append(paths, strPath)
-			continue
+			for _, neighbor := range last.Links {
+				if used[neighbor.Name] || visited[neighbor.Name] {
+					continue
+				}
+				visited[neighbor.Name] = true
+				newPath := append([]*Room{}, path...)
+				newPath = append(newPath, neighbor)
+				queue = append(queue, newPath)
+			}
 		}
 
-		
-		visitedInPath := map[*Room]bool{}
-		for _, r := range path {
-			visitedInPath[r] = true
+		if !foundEnd {
+			break
 		}
 
-		for _, neighbor := range last.Links {
-			if visitedInPath[neighbor] {
-				continue 
-			}
-			newPath := append([]*Room{}, path...)
-			newPath = append(newPath, neighbor)
-			queue = append(queue, newPath)
+		strPath := make([]string, len(endPath))
+		for i, room := range endPath {
+			strPath[i] = room.Name
+		}
+		paths = append(paths, strPath)
+
+		for i := 1; i < len(endPath)-1; i++ {
+			used[endPath[i].Name] = true
 		}
 	}
-
 	return paths
 }
 
@@ -127,7 +137,6 @@ func DistributeAnts(paths [][]string, antCount int) [][]int {
 		pathLen[i] = len(p)
 	}
 	minTurns := 0
-	// Number of ants that can arrive by turn minturn on a path of length l
 	for {
 		minTurns++
 		sum := 0
@@ -139,7 +148,6 @@ func DistributeAnts(paths [][]string, antCount int) [][]int {
 		if sum >= antCount {
 			break
 		}
-
 	}
 	remaining := antCount
 	antNum := 1
@@ -168,4 +176,19 @@ func DistributeAnts(paths [][]string, antCount int) [][]int {
 		remaining--
 	}
 	return antDist
+}
+
+func UniqueRows(slice [][]string) [][]string {
+	seen := make(map[string]bool)
+	var result [][]string
+
+	for _, row := range slice {
+		key := strings.Join(row, "|")
+		if !seen[key] {
+			seen[key] = true
+			result = append(result, row)
+		}
+	}
+
+	return result
 }
